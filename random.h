@@ -15,11 +15,15 @@ namespace CCCPP {
 
 class rc4_engine {
 public:
-    static constexpr unsigned width = 256;
-
     explicit rc4_engine(const std::string& key);
-    unsigned char operator()();
 
+    // std::uniform_random_bit_generator requirements
+    using result_t = unsigned char;
+    static constexpr result_t min() { return 0; }
+    static constexpr result_t max() { return 255; }
+    result_t operator()();
+
+    static constexpr unsigned width = 256;
 private:
     unsigned i;
     unsigned j;

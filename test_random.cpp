@@ -6,6 +6,8 @@
 
 using namespace CCCPP;
 
+static_assert(std::uniform_random_bit_generator<rc4_engine>);
+
 TEST_CASE("The RC4 random engine works properly", "[random]") {
     rc4_engine e("test");
     REQUIRE(e() == 223);
