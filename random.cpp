@@ -27,7 +27,7 @@ auto rc4_engine::operator()() -> unsigned char {
     return S[(S[i] + S[j]) % rc4_engine::width];
 }
 
-double uniform_random_variate(rc4_engine& e) {
+double generate_canonical(rc4_engine& e) {
     constexpr auto significance = 4503599627370496.0; // pow(2, 52)
 
     auto n = 0.0, d = 1.0; // numerator and denominator

@@ -28,11 +28,11 @@ TEST_CASE("The RC4 random engine works properly", "[random]") {
 
 TEST_CASE("The uniform_random function works properly", "[random]") {
     rc4_engine e("hello.");
-    double value = uniform_random_variate(e);
+    double value = generate_canonical(e);
     REQUIRE(value == Approx(0.9282578795792454));
     CHECK(value == 0.92825787957924543736254463510704226791858673095703125);
 
-    value = uniform_random_variate(e);
+    value = generate_canonical(e);
     REQUIRE(value == Approx(0.3752569768646784));
     CHECK(value == 0.37525697686467840430424303121981211006641387939453125);
 

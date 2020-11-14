@@ -31,10 +31,12 @@ private:
 };
 
 /* Uses the given engine to generate a random number between 0 (inclusive) and 1 (exclusive).
+ * This is functionally equivalent to std::generate_canonical,
+ * hence the name.
  *
  * This is David Bau's `prng` function.
  */
-double uniform_random_variate(rc4_engine&);
+double generate_canonical(rc4_engine&);
 
 } // namespace CCCPP
 
