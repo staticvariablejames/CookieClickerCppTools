@@ -1,5 +1,7 @@
 /* random.h
- * RC4-based pseudorandom number generator, and a uniform real distribution over [0, 1).
+ * RC4-based pseudorandom number generator,
+ * a uniform real distribution over [0, 1),
+ * and a convenience class that binds both.
  *
  * This is a C++ port of David Bau's seedrandom (https://github.com/davidbau/seedrandom).
  * Since the intent was to replicate only the functionality used by Cookie Clicker,
@@ -15,6 +17,7 @@ namespace CCCPP {
 
 class rc4_engine {
 public:
+    // key must not be ""
     explicit rc4_engine(const std::string& key);
 
     // std::uniform_random_bit_generator requirements
@@ -37,6 +40,19 @@ private:
  * This is David Bau's `prng` function.
  */
 double generate_canonical(rc4_engine&);
+
+/* Convenience class which calls generate_canonical in an internal rc4_engine.
+ *
+ * If in the constructor key is "",
+ * it is treated as "\0" instead.
+ */
+class prng {
+public:
+    explicit prng(const std::string& key);
+    double operator()();
+private:
+    rc4_engine engine;
+};
 
 } // namespace CCCPP
 

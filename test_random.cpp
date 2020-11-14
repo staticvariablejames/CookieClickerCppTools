@@ -45,3 +45,13 @@ TEST_CASE("The uniform_random function works properly", "[random]") {
      * and maybe those checks should be removed once this application is validated.
      */
 }
+
+TEST_CASE("The convenience class prng works as intended", "[random]") {
+    prng rng("test");
+    REQUIRE(rng() == Approx(0.8722025543160253));
+    REQUIRE(rng() == Approx(0.4023928518604753));
+
+    rng = prng("");
+    REQUIRE(rng() == Approx(0.23144008215179881));
+    REQUIRE(rng() == Approx(0.27404636548159655));
+}

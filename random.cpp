@@ -46,4 +46,13 @@ double generate_canonical(rc4_engine& e) {
     return (n+x)/d;
 }
 
+static const auto null_string = std::string{'\0'};
+prng::prng(const std::string& key) :
+    engine(key == "" ? null_string : key) // Avoid binding temporary to a reference
+{}
+
+double prng::operator()() {
+    return generate_canonical(engine);
+}
+
 } // namespace CCCPP
