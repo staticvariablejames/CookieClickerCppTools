@@ -2,8 +2,6 @@
 
 #include "random.h"
 
-#include <stdio.h>
-
 using namespace CCCPP;
 
 static_assert(std::uniform_random_bit_generator<rc4_engine>);
