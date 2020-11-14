@@ -26,6 +26,12 @@ private:
     std::array<unsigned char, width> S;
 };
 
+/* Uses the given engine to generate a random number between 0 (inclusive) and 1 (exclusive).
+ *
+ * This is David Bau's `prng` function.
+ */
+double uniform_random_variate(rc4_engine&);
+
 } // namespace CCCPP
 
 #endif // RANDOM_H

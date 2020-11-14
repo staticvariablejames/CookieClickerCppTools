@@ -23,3 +23,23 @@ TEST_CASE("The RC4 random engine works properly", "[random]") {
     REQUIRE(e() == 186);
     REQUIRE(e() == 15);
 }
+
+TEST_CASE("The uniform_random function works properly", "[random]") {
+    rc4_engine e("hello.");
+    double value = uniform_random_variate(e);
+    REQUIRE(value == Approx(0.9282578795792454));
+    CHECK(value == 0.92825787957924543736254463510704226791858673095703125);
+
+    value = uniform_random_variate(e);
+    REQUIRE(value == Approx(0.3752569768646784));
+    CHECK(value == 0.37525697686467840430424303121981211006641387939453125);
+
+    /* Reasoning:
+     * The approximate values are good enough for most cases,
+     * so I used REQUIRE there;
+     * it is nice to check for the exact value,
+     * but since floating point shenanigans might happen,
+     * I am only writing those as "CHECK",
+     * and maybe those checks should be removed once this application is validated.
+     */
+}

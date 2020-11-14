@@ -27,4 +27,23 @@ auto rc4_engine::operator()() -> unsigned char {
     return S[(S[i] + S[j]) % rc4_engine::width];
 }
 
+double uniform_random_variate(rc4_engine& e) {
+    constexpr auto significance = 4503599627370496.0; // pow(2, 52)
+
+    auto n = 0.0, d = 1.0; // numerator and denominator
+    unsigned x = 0; // next bit to be added to the numerator
+    while(n < significance) {
+        n = (n + x) * rc4_engine::width;
+        d *= rc4_engine::width;
+        x = e();
+    }
+
+    while(n >= 2*significance) {
+        n /= 2;
+        d /= 2;
+        x >>= 1;
+    }
+    return (n+x)/d;
+}
+
 } // namespace CCCPP
