@@ -22,11 +22,11 @@ public:
 
     // std::uniform_random_bit_generator requirements
     using result_t = unsigned char;
-    static constexpr result_t min() { return 0; }
-    static constexpr result_t max() { return 255; }
-    result_t operator()();
+    static constexpr auto min() -> result_t { return 0; }
+    static constexpr auto max() -> result_t { return 255; }
+    auto operator()() -> result_t;
 
-    static constexpr unsigned width = 256;
+    static constexpr auto width = 256u;
 private:
     unsigned i;
     unsigned j;
@@ -49,7 +49,7 @@ double generate_canonical(rc4_engine&);
 class prng {
 public:
     explicit prng(const std::string& key);
-    double operator()();
+    auto operator()() -> double;
 private:
     rc4_engine engine;
 };
