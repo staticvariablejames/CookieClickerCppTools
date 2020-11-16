@@ -8,6 +8,8 @@
 #ifndef STOCK_H
 #define STOCK_H
 
+#include <string>
+
 #include "random.h"
 
 namespace CCCPP {
@@ -61,6 +63,29 @@ public:
 
     auto softCap() const {
         return 97.0 + 3*_bank_level;
+    }
+
+    /* Returns a string of a sequence of Javascript asignments
+     * that changes the state of the corresponding Cookie Clicker stock
+     * to match the state of this object.
+     *
+     * If include_bank is true, it also includes a command to change the bank level.
+     *
+     * This is mostly useful for testing.
+     */
+    auto javascriptString(bool include_bank=false) const {
+        using namespace std::string_literals;
+        using std::to_string;
+        auto goodStr = "Game.Objects['Bank'].minigame.goodsById["s + to_string(_id) + "]"s;
+        auto str = ""s;
+        str += goodStr + ".val=" + to_string(_value) + ';';
+        str += goodStr + ".d=" + to_string(_delta) + ';';
+        str += goodStr + ".mode=" + to_string(static_cast<int>(_mode)) + ';';
+        str += goodStr + ".dur=" + to_string(_duration) + ';';
+        if(include_bank) {
+            str += "Game.Objects['Bank'].level=" + to_string(_bank_level) + ';';
+        }
+        return str;
     }
 };
 
