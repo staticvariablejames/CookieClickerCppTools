@@ -11,6 +11,8 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
     CHECK(stock.duration() == 10);
     CHECK(stock.id() == 0);
     CHECK(stock.bank_level() == 1);
+    CHECK(stock.restingValue() == Approx(10.0));
+    CHECK(stock.softCap() == Approx(100.0));
 
     stock.value(32.0);
     stock.delta(-1.5);
@@ -25,4 +27,6 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
     CHECK(stock.duration() == 550);
     CHECK(stock.id() == 3);
     CHECK(stock.bank_level() == 5);
+    CHECK(stock.restingValue() == Approx(44.0));
+    CHECK(stock.softCap() == Approx(112.0));
 }

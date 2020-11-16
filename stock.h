@@ -54,6 +54,14 @@ public:
     void bank_level(int bank_level) { _bank_level = bank_level; }
 
     Stock() = default;
+
+    auto restingValue() const {
+        return _bank_level + 10.0*_id + 9;
+    }
+
+    auto softCap() const {
+        return 97.0 + 3*_bank_level;
+    }
 };
 
 }
