@@ -143,7 +143,7 @@ public:
         _duration--;
         if(_duration <= 0) {
             _duration = static_cast<int>(10 + 990*rng());
-            if(rng() && (_mode == StockMode::FastRise || _mode == StockMode::FastFall)) {
+            if(rng() < 0.7 && (_mode == StockMode::FastRise || _mode == StockMode::FastFall)) {
                 _mode = StockMode::Chaotic;
             } else {
                 _mode = chooseMode(rng);

@@ -86,3 +86,39 @@ TEST_CASE("Stock::tick behaves as intended", "[stock]") {
     CHECK(stock.mode() == StockMode::SlowFall);
     CHECK(stock.duration() == 217);
 }
+
+TEST_CASE("Stock::tick changes mode properly", "[stock]") {
+    // I randomly typed those strings on the console...
+    Stock stock;
+    stock.duration(1);
+    SECTION("Staying in the same mode works") {
+        prng rng(GENERATE("asentuh", "110123"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::Stable);
+    }
+    SECTION("Changing to StockMode::SlowRise works") {
+        prng rng(GENERATE("aoeu", "asdf"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::SlowRise);
+    }
+    SECTION("Changing to StockMode::SlowFall works") {
+        prng rng(GENERATE("yroaoi", "oeroaoi"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::SlowFall);
+    }
+    SECTION("Changing to StockMode::FastRise works") {
+        prng rng(GENERATE("oeu", "o359rq4"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::FastRise);
+    }
+    SECTION("Changing to StockMode::FastFall works") {
+        prng rng(GENERATE("abc", "o359rqk"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::FastFall);
+    }
+    SECTION("Changing to StockMode::Chaotic works") {
+        prng rng(GENERATE("eu", "adf"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::Chaotic);
+    }
+}
