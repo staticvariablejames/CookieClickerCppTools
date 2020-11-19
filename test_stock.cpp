@@ -1,6 +1,8 @@
 #include "stock.h"
 #include "catch2/catch.hpp"
 
+#include <iostream>
+
 #include "random.h"
 
 using namespace CCCPP;
@@ -120,5 +122,21 @@ TEST_CASE("Stock::tick changes mode properly", "[stock]") {
         prng rng(GENERATE("eu", "adf"));
         stock.tick(rng);
         CHECK(stock.mode() == StockMode::Chaotic);
+    }
+}
+
+TEST_CASE("FastRise may switch to FastFall mid-duration", "[stock]") {
+    Stock stock;
+    stock.mode(StockMode::FastRise);
+    SECTION("Sometimes switch") {
+        prng rng(GENERATE("728", "729", "799"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::FastFall);
+        CHECK(stock.duration() == 9);
+    }
+    SECTION("But not most times") {
+        prng rng(GENERATE("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"));
+        stock.tick(rng);
+        CHECK(stock.mode() == StockMode::FastRise);
     }
 }
