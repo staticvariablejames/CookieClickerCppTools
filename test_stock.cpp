@@ -1,6 +1,8 @@
 #include "stock.h"
 #include "catch2/catch.hpp"
 
+#include "random.h"
+
 using namespace CCCPP;
 
 TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
@@ -57,4 +59,30 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
         "Game.Objects['Bank'].minigame.goodsById[3].dur=550;"
         "Game.Objects['Bank'].level=5;"
     );
+}
+
+TEST_CASE("Stock::tick behaves as intended", "[stock]") {
+    Stock stock;
+    prng rng("test");
+
+    stock.tick(rng);
+    CHECK(stock.value() == Approx(10.026040165045062));
+    CHECK(stock.delta() == Approx(0.065083024300872));
+    CHECK(stock.mode() == StockMode::Stable);
+    CHECK(stock.duration() == 9);
+
+    rng = prng("test2");
+    stock.tick(rng);
+    CHECK(stock.value() == Approx(10.07204888866176));
+    CHECK(stock.delta() == Approx(0.03826339941499993));
+    CHECK(stock.mode() == StockMode::Stable);
+    CHECK(stock.duration() == 8);
+
+    stock.duration(1);
+    rng = prng("test3");
+    stock.tick(rng);
+    CHECK(stock.value() == Approx(9.887772875938166));
+    CHECK(stock.delta() == Approx(-0.019272334437613416));
+    CHECK(stock.mode() == StockMode::SlowFall);
+    CHECK(stock.duration() == 217);
 }

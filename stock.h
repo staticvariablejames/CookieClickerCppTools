@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "random.h"
+#include "random_utils.h"
 
 namespace CCCPP {
 
@@ -86,6 +86,69 @@ public:
             str += "Game.Objects['Bank'].level=" + to_string(_bank_level) + ';';
         }
         return str;
+    }
+
+    // Weighted random mode chooser.
+    template<typename RNG>
+    static auto chooseMode(RNG& rng) {
+        return choose({
+                StockMode::Stable, StockMode::SlowRise, StockMode::SlowRise, StockMode::SlowFall,
+                StockMode::SlowFall, StockMode::FastRise, StockMode::FastFall, StockMode::Chaotic,
+            },
+            rng);
+    }
+
+    template<typename RNG>
+    void tick(RNG& rng) {
+        _delta *= 0.97;
+        switch(_mode) {
+            case StockMode::Stable:     _delta *= 0.95; _delta += 0.05*(rng()-0.5); break;
+            case StockMode::SlowRise:   _delta *= 0.99; _delta += 0.05*(rng()-0.1); break;
+            case StockMode::SlowFall:   _delta *= 0.99; _delta -= 0.05*(rng()-0.1); break;
+            case StockMode::FastRise:   _delta += 0.15*(rng()-0.1); _value += rng(); break;
+            case StockMode::FastFall:   _delta -= 0.15*(rng()-0.1); _value -= rng(); break;
+            case StockMode::Chaotic:    _delta += 0.3*(rng()-0.5); break;
+        }
+
+        _value += 0.02*(restingValue()-_value);
+        _value += 0.4*(rng()-0.5);
+        _delta += 0.1*(rng()-0.5);
+        if(rng() < 0.1) _value += 3*(rng()-0.5);
+        if(rng() < 0.1) _delta += 0.3*(rng()-0.5);
+
+        if(_mode == StockMode::Chaotic) {
+            if(rng() < 0.5) _value += 10*(rng()-0.5);
+            if(rng() < 0.2) _delta += 2*(rng()-0.5);
+        }
+        if(_mode == StockMode::FastRise && rng() < 0.3) {
+            _delta += 0.1*(rng()-0.5);
+            _value += 10*(rng()-0.7);
+        }
+        if(_mode == StockMode::FastRise && rng() < 0.03) {
+            _mode = StockMode::FastFall;
+        }
+        if(_mode == StockMode::FastFall && rng() < 0.3) {
+            _delta += 0.1*(rng()-0.5);
+            _value += 10*(rng()-0.3);
+        }
+
+        if(_value > softCap() && _delta > 0) _delta *= 0.9;
+
+        _value += _delta;
+
+        if(_value < 5) _value += 0.5*(5-_value);
+        if(_value < 5 && _delta < 0) _delta *= 0.95;
+        if(_value < 1) _value = 1.0;
+
+        _duration--;
+        if(_duration <= 0) {
+            _duration = static_cast<int>(10 + 990*rng());
+            if(rng() && (_mode == StockMode::FastRise || _mode == StockMode::FastFall)) {
+                _mode = StockMode::Chaotic;
+            } else {
+                _mode = chooseMode(rng);
+            }
+        }
     }
 };
 
