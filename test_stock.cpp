@@ -125,6 +125,44 @@ TEST_CASE("Stock::tick changes mode properly", "[stock]") {
     }
 }
 
+TEST_CASE("FastRise and FastFall show bias towards Chaotic", "[stock]") {
+    int count[] = {0, 0, 0, 0, 0, 0};
+
+    SECTION("FastRise show bias", "[stock]") {
+        for(auto i = 0; i < 1000; i++) {
+            Stock stock;
+            stock.duration(1);
+            stock.mode(StockMode::FastRise);
+            prng rng(std::to_string(i));
+            stock.tick(rng);
+            count[static_cast<int>(stock.mode())]++;
+        }
+        CHECK(count[0] == 32);
+        CHECK(count[1] == 69);
+        CHECK(count[2] == 78);
+        CHECK(count[3] == 45);
+        CHECK(count[4] == 36);
+        CHECK(count[5] == 740);
+    }
+
+    SECTION("FastFall show bias", "[stock]") {
+        for(auto i = 0; i < 1000; i++) {
+            Stock stock;
+            stock.duration(1);
+            stock.mode(StockMode::FastFall);
+            prng rng(std::to_string(i));
+            stock.tick(rng);
+            count[static_cast<int>(stock.mode())]++;
+        }
+        CHECK(count[0] == 40);
+        CHECK(count[1] == 84);
+        CHECK(count[2] == 72);
+        CHECK(count[3] == 23);
+        CHECK(count[4] == 34);
+        CHECK(count[5] == 747);
+    }
+}
+
 TEST_CASE("FastRise may switch to FastFall mid-duration", "[stock]") {
     Stock stock;
     stock.mode(StockMode::FastRise);
@@ -230,4 +268,83 @@ TEST_CASE("Delta and value change correctly in all modes", "[stock]") {
         CHECK(stock.value() == Approx(15.37418775813127));
         CHECK(stock.delta() == Approx(0.2657561468906777));
     }
+}
+
+TEST_CASE("FastRise and FastFall special behavior", "[stock]") {
+    Stock stock;
+    stock.value(25);
+    stock.delta(1);
+    SECTION("FastRise special behavior kicks in") {
+        stock.mode(StockMode::FastRise);
+        prng rng("test32");
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(21.04406950902571));
+        CHECK(stock.delta() == Approx(1.0916515006483285));
+
+        rng = prng("test19");
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(16.329421130036295));
+        CHECK(stock.delta() == Approx(1.151595180254644));
+    }
+    SECTION("FastFall special behavior kicks in") {
+        stock.mode(StockMode::FastFall);
+        prng rng("test32");
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(23.454135022493432));
+        CHECK(stock.delta() == Approx(1.120729409577468));
+
+        rng = prng("test19");
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(21.196426179939394));
+        CHECK(stock.delta() == Approx(1.0959183958178986));
+    }
+}
+
+TEST_CASE("Large values are affected by the soft cap", "[stock]") {
+    Stock stock;
+    stock.value(125);
+    stock.delta(15);
+    prng rng("test4");
+
+    SECTION("Affected with banks level 1") {
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(135.20450316372376));
+        CHECK(stock.delta() == Approx(12.472506641710098));
+    }
+
+    SECTION("Still affected with banks level 8") {
+        stock.bank_level(8);
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(135.34450316372374));
+        CHECK(stock.delta() == Approx(12.472506641710098));
+    }
+
+    SECTION("But not affected with banks level 9") {
+        stock.bank_level(9);
+        stock.tick(rng);
+        CHECK(stock.value() == Approx(136.7503372350249));
+        CHECK(stock.delta() == Approx(13.85834071301122));
+    }
+}
+
+TEST_CASE("Small values are affected by the $1 and $5 thresholds", "[stock]") {
+    Stock stock;
+    stock.value(1.2);
+    stock.delta(-5);
+
+    prng rng("test4");
+    stock.tick(rng);
+    CHECK(stock.value() == 1.0); // Exact equality here
+    CHECK(stock.delta() == Approx(-4.343076322639338));
+
+    rng = prng("test3");
+    stock.tick(rng);
+    CHECK(stock.value() == 1.0);
+    CHECK(stock.delta() == Approx(-3.8538430438951514));
+
+    rng = prng("test2");
+    stock.tick(rng);
+    CHECK(stock.value() == Approx(1.3076195775374821));
+    CHECK(stock.delta() == Approx(-3.3943756238062535));
+
 }
