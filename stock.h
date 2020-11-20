@@ -25,12 +25,12 @@ enum class StockMode {
 
 class Stock {
 private:
+    int _id = 0;
+    int _bank_level = 1;
     double _value = 10.0;
     double _delta = 0.0;
     StockMode _mode = StockMode::Stable;
     int _duration = 10;
-    int _id = 0;
-    int _bank_level = 1;
     /* These default values are here to make the class default-constructible
      * and have the default-constructed value usable.
      */
@@ -96,6 +96,22 @@ public:
                 StockMode::SlowFall, StockMode::FastRise, StockMode::FastFall, StockMode::Chaotic,
             },
             rng);
+    }
+
+    /* Constructs a stock with the given id and bank level,
+     * using the same initialization procedure done by the game.
+     */
+    template<typename RNG>
+    Stock(int id, int bank_level, RNG& rng):
+        _id{id},
+        _bank_level{bank_level},
+        _value{restingValue()},
+        _delta{0.2*rng() - 0.1},
+        _mode{chooseMode(rng)},
+        _duration{static_cast<int>(10 + rng()*990)}
+    {
+        for(auto i = 0; i < 15; i++)
+            tick(rng);
     }
 
     template<typename RNG>

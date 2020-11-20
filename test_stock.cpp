@@ -61,6 +61,11 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
         "Game.Objects['Bank'].minigame.goodsById[3].dur=550;"
         "Game.Objects['Bank'].level=5;"
     );
+
+    prng rng("ignored");
+    stock = Stock(5, 9, rng);
+    CHECK(stock.id() == 5);
+    CHECK(stock.bank_level() == 9);
 }
 
 TEST_CASE("Stock::tick behaves as intended", "[stock]") {
