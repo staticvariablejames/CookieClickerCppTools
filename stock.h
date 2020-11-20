@@ -118,7 +118,7 @@ public:
 
         if(_mode == StockMode::Chaotic) {
             if(rng() < 0.5) _value += 10*(rng()-0.5);
-            if(rng() < 0.2) _delta += 2*(rng()-0.5);
+            if(rng() < 0.2) _delta = 2*(rng()-0.5);
         }
         if(_mode == StockMode::FastRise && rng() < 0.3) {
             _delta += 0.1*(rng()-0.5);
