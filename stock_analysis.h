@@ -18,6 +18,9 @@ struct histogram {
     static constexpr int year_of_ticks = 365*24*60 + 24*60/4;
 };
 
+// Outputs Javascript code to assign the histogram to InsugarTrading.data[level][id].
+std::ostream& operator<<(std::ostream& os, const histogram&);
+
 template<typename RNG>
 histogram generateStockHistogram(Stock& stock, RNG& rng, int ticks) {
     histogram h;
