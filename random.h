@@ -21,7 +21,7 @@ public:
     explicit rc4_engine(const std::string& key);
 
     // std::uniform_random_bit_generator requirements
-    using result_t = unsigned char;
+    using result_t = unsigned;
     static constexpr auto min() -> result_t { return 0; }
     static constexpr auto max() -> result_t { return 255; }
     auto operator()() -> result_t;
@@ -30,7 +30,11 @@ public:
 private:
     unsigned i;
     unsigned j;
-    std::array<unsigned char, width> S;
+    std::array<unsigned, width> S;
+    /* Aligned access is faster than unaligned access;
+     * using unsigned here (instead of, say, unsigned char)
+     * gives about 10% better performance.
+     */
 };
 
 /* Uses the given engine to generate a random number between 0 (inclusive) and 1 (exclusive).

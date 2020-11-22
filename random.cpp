@@ -20,7 +20,7 @@ rc4_engine::rc4_engine(const std::string& key):
     }
 }
 
-auto rc4_engine::operator()() -> unsigned char {
+auto rc4_engine::operator()() -> unsigned {
     i = (i+1) % rc4_engine::width;
     j = (j + S[i]) % rc4_engine::width;
     std::swap(S[i], S[j]);
