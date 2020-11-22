@@ -11,6 +11,7 @@
 #define RANDOM_H
 
 #include <array>
+#include <random>
 #include <string>
 
 namespace CCCPP {
@@ -57,6 +58,19 @@ public:
 private:
     rc4_engine engine;
 };
+
+/* Returns an object that behaves similarly to the prng class above,
+ * but using random number generators from the standard library.
+ */
+template<typename Engine = std::minstd_rand>
+auto std_prng(const std::string& key) {
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    std::seed_seq seedseq(key.begin(), key.end());
+    Engine engine(seedseq);
+    return [=]() mutable {
+        return distribution(engine);
+    };
+}
 
 } // namespace CCCPP
 
