@@ -353,3 +353,94 @@ TEST_CASE("Small values are affected by the $1 and $5 thresholds", "[stock]") {
     CHECK(stock.delta() == Approx(-3.3943756238062535));
 
 }
+
+TEST_CASE("Parity is preserved in a longer run", "[stock][!hide]") {
+    /* To get the actual values of the stock from inside Cookie Clicker,
+     * I modified Game.Objects['Bank'].minigame.tick to only tick the first stock,
+     * so it is not easy to rewrite this specific test if Orteil changes anything.
+     *
+     * This test takes over two minutes to run,
+     * so it is not ran by default.
+     */
+    auto rng = prng("test");
+    auto stock = Stock(0, 5, rng);
+
+    rng = prng("longer test");
+    for(auto i = 0; i < 10; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(14.465934747580102));
+    CHECK(stock.delta() == Approx(-0.07187192344905231));
+
+    for(auto i = 0; i < 50; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(4.697246620767649));
+    CHECK(stock.delta() == Approx(-0.561482351120001));
+
+    for(auto i = 0; i < 300; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(5.595490093088361));
+    CHECK(stock.delta() == Approx(-0.3892117784148011));
+
+    for(auto i = 0; i < 1080; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(38.683758096343766));
+    CHECK(stock.delta() == Approx(0.4633186647106399));
+
+    for(auto i = 0; i < 6*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(17.132568176899483));
+    CHECK(stock.delta() == Approx(-0.005051332157077839));
+
+    for(auto i = 0; i < (365-7)*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(45.74429071080744));
+    CHECK(stock.delta() == Approx(0.7366975882302614));
+
+    for(auto i = 0; i < 9*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(14.981321546361851));
+    CHECK(stock.delta() == Approx(-0.059904327694431325));
+
+    for(auto i = 0; i < 90*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(4.011373132098045));
+    CHECK(stock.delta() == Approx(-1.2267612790805167));
+
+    for(auto i = 0; i < 900*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(4.076355117422286));
+    CHECK(stock.delta() == Approx(0.2958873278831573));
+}
+
+TEST_CASE("Parity is preserved in a longer run with stock id 10", "[stock][!hide]") {
+    auto rng = prng("id10test");
+    auto stock = Stock(10, 3, rng);
+
+    rng = prng("longer test with id 10");
+    for(auto i = 0; i < 10; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(114.16791146665629));
+    CHECK(stock.delta() == Approx(0.08569653948100751));
+
+    for(auto i = 0; i < 50; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(116.10177959767705));
+    CHECK(stock.delta() == Approx(-0.028613103974018454));
+
+    for(auto i = 0; i < 300; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(111.73815987530344));
+    CHECK(stock.delta() == Approx(-0.12946193222147295));
+
+    for(auto i = 0; i < 1080; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(24.010070751680942));
+    CHECK(stock.delta() == Approx(-2.0343400140818986));
+
+    for(auto i = 0; i < 6*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(121.14086897200677));
+    CHECK(stock.delta() == Approx(0.12367940015084451));
+
+    for(auto i = 0; i < (365-7)*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(90.65188187547245));
+    CHECK(stock.delta() == Approx(-0.3824170176979499));
+
+    for(auto i = 0; i < 9*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(80.99290278290262));
+    CHECK(stock.delta() == Approx(-0.5974737625433496));
+
+    for(auto i = 0; i < 90*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(120.15852532001));
+    CHECK(stock.delta() == Approx(-0.01125434418441229));
+
+    for(auto i = 0; i < 900*365*1440; i++) stock.tick(rng);
+    CHECK(stock.value() == Approx(106.77709803001171));
+    CHECK(stock.delta() == Approx(0.8883095082017826));
+}
