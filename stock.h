@@ -8,7 +8,9 @@
 #ifndef STOCK_H
 #define STOCK_H
 
+#include <iomanip>
 #include <string>
+#include <sstream>
 
 #include "random_utils.h"
 
@@ -77,15 +79,16 @@ public:
         using namespace std::string_literals;
         using std::to_string;
         auto goodStr = "Game.Objects['Bank'].minigame.goodsById["s + to_string(_id) + "]"s;
-        auto str = ""s;
-        str += goodStr + ".val=" + to_string(_value) + ';';
-        str += goodStr + ".d=" + to_string(_delta) + ';';
-        str += goodStr + ".mode=" + to_string(static_cast<int>(_mode)) + ';';
-        str += goodStr + ".dur=" + to_string(_duration) + ';';
+
+        std::stringstream ss;
+        ss << goodStr << ".val=" << std::setprecision(17) << _value << ';';
+        ss << goodStr << ".d=" << std::setprecision(17) << _delta << ';';
+        ss << goodStr << ".mode=" << static_cast<int>(_mode) << ';';
+        ss << goodStr << ".dur=" << _duration << ';';
         if(include_bank) {
-            str += "Game.Objects['Bank'].level=" + to_string(_bank_level) + ';';
+            ss << "Game.Objects['Bank'].level=" << _bank_level << ';';
         }
-        return str;
+        return ss.str();
     }
 
     // Weighted random mode chooser.

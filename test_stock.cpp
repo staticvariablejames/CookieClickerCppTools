@@ -19,28 +19,28 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
     CHECK(stock.softCap() == Approx(100.0));
 
     CHECK(stock.javascriptString() ==
-        "Game.Objects['Bank'].minigame.goodsById[0].val=10.000000;"
-        "Game.Objects['Bank'].minigame.goodsById[0].d=0.000000;"
+        "Game.Objects['Bank'].minigame.goodsById[0].val=10;"
+        "Game.Objects['Bank'].minigame.goodsById[0].d=0;"
         "Game.Objects['Bank'].minigame.goodsById[0].mode=0;"
         "Game.Objects['Bank'].minigame.goodsById[0].dur=10;"
     );
     CHECK(stock.javascriptString(true) ==
-        "Game.Objects['Bank'].minigame.goodsById[0].val=10.000000;"
-        "Game.Objects['Bank'].minigame.goodsById[0].d=0.000000;"
+        "Game.Objects['Bank'].minigame.goodsById[0].val=10;"
+        "Game.Objects['Bank'].minigame.goodsById[0].d=0;"
         "Game.Objects['Bank'].minigame.goodsById[0].mode=0;"
         "Game.Objects['Bank'].minigame.goodsById[0].dur=10;"
         "Game.Objects['Bank'].level=1;"
     );
 
-    stock.value(32.0);
-    stock.delta(-1.5);
+    stock.value(32.111111111111111111);
+    stock.delta(-1.111111111111111111);
     stock.mode(StockMode::FastRise);
     stock.duration(550);
     stock.id(3);
     stock.bank_level(5);
 
-    CHECK(stock.value() == Approx(32.0));
-    CHECK(stock.delta() == Approx(-1.5));
+    CHECK(stock.value() == Approx(32.1111111111111111));
+    CHECK(stock.delta() == Approx(-1.1111111111111111));
     CHECK(stock.mode() == StockMode::FastRise);
     CHECK(stock.duration() == 550);
     CHECK(stock.id() == 3);
@@ -49,14 +49,14 @@ TEST_CASE("Basic getters and setters of CCCPP::stock work", "[stock]") {
     CHECK(stock.softCap() == Approx(112.0));
 
     CHECK(stock.javascriptString() ==
-        "Game.Objects['Bank'].minigame.goodsById[3].val=32.000000;"
-        "Game.Objects['Bank'].minigame.goodsById[3].d=-1.500000;"
+        "Game.Objects['Bank'].minigame.goodsById[3].val=32.111111111111114;" // precision
+        "Game.Objects['Bank'].minigame.goodsById[3].d=-1.1111111111111112;"
         "Game.Objects['Bank'].minigame.goodsById[3].mode=3;"
         "Game.Objects['Bank'].minigame.goodsById[3].dur=550;"
     );
     CHECK(stock.javascriptString(true) ==
-        "Game.Objects['Bank'].minigame.goodsById[3].val=32.000000;"
-        "Game.Objects['Bank'].minigame.goodsById[3].d=-1.500000;"
+        "Game.Objects['Bank'].minigame.goodsById[3].val=32.111111111111114;"
+        "Game.Objects['Bank'].minigame.goodsById[3].d=-1.1111111111111112;"
         "Game.Objects['Bank'].minigame.goodsById[3].mode=3;"
         "Game.Objects['Bank'].minigame.goodsById[3].dur=550;"
         "Game.Objects['Bank'].level=5;"
