@@ -35,7 +35,7 @@ int main(int argc, char ** argv) {
     std::cout << "InsugarTrading.data[" << bank_level << "] = [];\n";
     for(auto i = 0; i < 16; i++) {
         std::clog << "Generating " << names[i] << std::endl;
-        CCCPP::prng rng(names[i] + std::to_string(bank_level));
+        auto rng = CCCPP::std_prng<std::mt19937_64>(names[i] + std::to_string(bank_level));
         CCCPP::Stock stock(i, bank_level, rng);
         // Discard the first year
         (void) CCCPP::generateStockHistogram(stock, rng, CCCPP::histogram::year_of_ticks);
