@@ -8,6 +8,7 @@
 #ifndef STOCK_H
 #define STOCK_H
 
+#include <cmath>
 #include <iomanip>
 #include <string>
 #include <sstream>
@@ -38,6 +39,11 @@ private:
      */
 
 public:
+    /*
+     * Number of goods defined by Cookie Clicker (one for each building except cursors and grandmas).
+     */
+    static constexpr unsigned count = 18;
+
     // Setters and getters
     auto value() const { return _value; }
     void value(double value) { _value = value; }
@@ -111,33 +117,56 @@ public:
         _value{restingValue()},
         _delta{0.2*rng() - 0.1},
         _mode{chooseMode(rng)},
-        _duration{static_cast<int>(10 + rng()*990)}
+        _duration{static_cast<int>(10 + rng()*690)}
     {
         for(auto i = 0; i < 15; i++)
-            tick(rng);
+            tick(rng, 0.0);
+    }
+
+    struct global_parameters {
+        double D;
+        double P;
+    };
+
+    template<typename RNG>
+    static global_parameters generateGlobalParameters(RNG& rng, double dragonBoost) {
+        global_parameters glob;
+        glob.D = 0.0;
+        glob.P = rng();
+        if(rng() < 0.1 + 0.1*dragonBoost) glob.D = (rng() - 0.5)*2;
+        return glob;
     }
 
     template<typename RNG>
-    void tick(RNG& rng) {
-        _delta *= 0.97;
+    void singleStockTick(RNG& rng, const global_parameters& glob, double dragonBoost) {
+        _delta *= 0.97 + 0.01*dragonBoost;
         switch(_mode) {
             case StockMode::Stable:     _delta *= 0.95; _delta += 0.05*(rng()-0.5); break;
             case StockMode::SlowRise:   _delta *= 0.99; _delta += 0.05*(rng()-0.1); break;
             case StockMode::SlowFall:   _delta *= 0.99; _delta -= 0.05*(rng()-0.1); break;
-            case StockMode::FastRise:   _delta += 0.15*(rng()-0.1); _value += rng(); break;
-            case StockMode::FastFall:   _delta -= 0.15*(rng()-0.1); _value -= rng(); break;
+            case StockMode::FastRise:   _delta += 0.15*(rng()-0.1); _value += 5*rng(); break;
+            case StockMode::FastFall:   _delta -= 0.15*(rng()-0.1); _value -= 5*rng(); break;
             case StockMode::Chaotic:    _delta += 0.3*(rng()-0.5); break;
         }
 
-        _value += 0.02*(restingValue()-_value);
-        _value += 0.4*(rng()-0.5);
+        _value += 0.01*(restingValue()-_value);
+        if(glob.D != 0.0 && rng() < glob.P) {
+            _value -= glob.D * (1 + 7 * _delta * std::pow(rng(), 3));
+            _value -= glob.D * (1 + 7 * std::pow(rng(), 3));
+            _delta += glob.D * (1 + 4 * rng());
+            _duration = 0;
+        }
+
+        _value += 3*std::pow(2*(rng()-0.5), 11);
         _delta += 0.1*(rng()-0.5);
-        if(rng() < 0.1) _value += 3*(rng()-0.5);
-        if(rng() < 0.1) _delta += 0.3*(rng()-0.5);
+        if(rng() < 0.15) _value += 3*(rng()-0.5);
+        if(rng() < 0.03) _value += (10 + 10*dragonBoost) * (rng()-0.5);
+        if(rng() < 0.1) _delta += (0.3 + 0.2*dragonBoost) * (rng()-0.5);
+
 
         if(_mode == StockMode::Chaotic) {
             if(rng() < 0.5) _value += 10*(rng()-0.5);
-            if(rng() < 0.2) _delta = 2*(rng()-0.5);
+            if(rng() < 0.2) _delta = (2 + 6*dragonBoost) * (rng()-0.5);
         }
         if(_mode == StockMode::FastRise && rng() < 0.3) {
             _delta += 0.1*(rng()-0.5);
@@ -151,7 +180,9 @@ public:
             _value += 10*(rng()-0.3);
         }
 
-        if(_value > softCap() && _delta > 0) _delta *= 0.9;
+        if(_value > softCap() && _delta > 0) {
+            _delta *= 0.9;
+        }
 
         _value += _delta;
 
@@ -161,13 +192,21 @@ public:
 
         _duration--;
         if(_duration <= 0) {
-            _duration = static_cast<int>(10 + 990*rng());
-            if(rng() < 0.7 && (_mode == StockMode::FastRise || _mode == StockMode::FastFall)) {
+            _duration = static_cast<int>(10 + (690 - 200*dragonBoost) * rng());
+            if(rng() < dragonBoost && rng() < 0.5) {
+                _mode = StockMode::Chaotic;
+            } else if(rng() < 0.7 && (_mode == StockMode::FastRise || _mode == StockMode::FastFall)) {
                 _mode = StockMode::Chaotic;
             } else {
                 _mode = chooseMode(rng);
             }
         }
+    }
+
+    template<typename RNG>
+    void tick(RNG& rng, double dragonBoost) {
+        auto glob = Stock::generateGlobalParameters(rng, dragonBoost);
+        this->singleStockTick(rng, glob, dragonBoost);
     }
 };
 

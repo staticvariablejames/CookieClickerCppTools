@@ -30,16 +30,19 @@ int main(int argc, char ** argv) {
         "CKI",
         "RCP",
         "SBD",
+        "PBL",
+        "YOU",
     };
 
-    std::cout << "InsugarTrading.data[" << bank_level << "] = [];\n";
-    for(auto i = 0; i < 16; i++) {
+    std::cout << "InsugarTrading.data[" << bank_level << "] = {0.0: [], 0.1: [], 1.0: [], 1.1: []};";
+    for(auto i = 0; i < CCCPP::Stock::count; i++) {
         std::clog << "Generating " << names[i] << std::endl;
+        // Just some reproducible seed
         auto rng = CCCPP::std_prng<std::mt19937_64>(names[i] + std::to_string(bank_level));
         CCCPP::Stock stock(i, bank_level, rng);
         // Discard the first year
-        (void) CCCPP::generateStockHistogram(stock, rng, CCCPP::histogram::year_of_ticks);
-        auto h = CCCPP::generateStockHistogram(stock, rng, 1000*CCCPP::histogram::year_of_ticks);
+        (void) CCCPP::generateStockHistogram(stock, rng, CCCPP::histogram_set::year_of_ticks);
+        auto h = CCCPP::generateStockHistogram(stock, rng, 1000*CCCPP::histogram_set::year_of_ticks);
         std::cout << h << '\n';
     }
 }
