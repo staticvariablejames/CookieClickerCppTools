@@ -1,4 +1,4 @@
-#include "stock_analysis.h"
+#include "stock_histogram.h"
 
 namespace CCCPP {
 

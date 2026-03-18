@@ -1,8 +1,5 @@
 #include "stock.h"
 #include "catch2/catch.hpp"
-
-#include <iostream>
-
 #include "random.h"
 
 using namespace CCCPP;

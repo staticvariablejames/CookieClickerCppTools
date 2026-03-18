@@ -3,7 +3,7 @@
 
 #include "random.h"
 #include "stock.h"
-#include "stock_analysis.h"
+#include "stock_histogram.h"
 
 int main(int argc, char ** argv) {
     int bank_level = 0;
@@ -34,7 +34,7 @@ int main(int argc, char ** argv) {
         "YOU",
     };
 
-    std::cout << "InsugarTrading.data[" << bank_level << "] = {0.0: [], 0.1: [], 1.0: [], 1.1: []};";
+    std::cout << "InsugarTrading.data[" << bank_level << "] = {0.0: [], 0.1: [], 1.0: [], 1.1: []};\n";
     for(auto i = 0; i < CCCPP::Stock::count; i++) {
         std::clog << "Generating " << names[i] << std::endl;
         // Just some reproducible seed
@@ -43,6 +43,6 @@ int main(int argc, char ** argv) {
         // Discard the first year
         (void) CCCPP::generateStockHistogram(stock, rng, CCCPP::histogram_set::year_of_ticks);
         auto h = CCCPP::generateStockHistogram(stock, rng, 1000*CCCPP::histogram_set::year_of_ticks);
-        std::cout << h << '\n';
+        std::cout << h;
     }
 }
